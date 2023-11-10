@@ -1,8 +1,18 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def fare_price(distance, different_regions, hubs_in_dest_region):
-    raise NotImplementedError
+    """
+    A function to compute the fare price using the below inputs and return the result
+
+    :param distance: Distance between the two stations
+    :param different_regions: This is 1 if the stations belong to different regions and 0 otherwise
+    :param hubs_in_dest_region: Number of hub stations in the same region as the destination station
+    :return: Returns the fare price
+    """
+    fareprice = 1 + distance * np.exp((-1 * distance) / 100) * (1 + (different_regions * hubs_in_dest_region) / 10)
+    return fareprice
 
 
 class Station:
