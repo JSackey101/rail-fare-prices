@@ -16,6 +16,27 @@ def fare_price(distance, different_regions, hubs_in_dest_region):
 
 
 class Station:
+    def __init__(self, name: str, region: str, crs: str, lat: float, lon: float, hub: bool):
+        self.name = name
+        self.region = region
+        self.crs = crs
+        if type(name) != str or type(region) != str or type(crs) != str:
+            raise TypeError("The Station's name, region and CRS code should all be strings.")
+        if len(crs) > 3 or len(crs) < 3 or crs.isupper() is False:
+            raise ValueError("The Station's CRS code should be a 3-character string that only has UPPERCASE letters")
+        self.lat = lat
+        self.lon = lon
+        if type(lat) != float or type(lon) != float:
+            raise TypeError("The latitude and longitude of the Station should both be decimal numbers in degrees ("
+                            "should be a float value).")
+        if lat < -90.0 or lat > 90.0:
+            raise ValueError("The latitude of the Station should be between -90.0 degrees and 90.0 degrees")
+        if lon < -180.0 or lon > 180.0:
+            raise ValueError("The longitude of the Station should be between -180.0 degrees and 180.0 degrees")
+        self.hub = hub
+        if type(hub) != bool:
+            raise TypeError("Whether the Station is a Hub Station should either be True or False.")
+
     def distance_to(self):
         raise NotImplementedError
 
