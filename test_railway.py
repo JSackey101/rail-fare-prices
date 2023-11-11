@@ -2,7 +2,7 @@ import pytest
 from railway import fare_price, Station, RailNetwork
 import numpy as np
 
-
+# TODO Add test to ensure that CRS codes loaded into RailNetwork are unique
 @pytest.mark.parametrize("name, region, crs, lat, lon, hub",
                          [("Brighton", "South East", "Btn", 50.829659, -0.141234, True),
                           ("Brighton", "South East", "BTNN", 50.829659, -0.141234, True),
