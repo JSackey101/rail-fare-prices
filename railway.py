@@ -35,7 +35,7 @@ class Station:
             raise ValueError("The longitude of the Station should be between -180.0 degrees and 180.0 degrees")
         self.hub = hub
         if type(hub) != bool:
-            raise TypeError("Whether the Station is a Hub Station should either be True or False.")
+            raise TypeError("Whether the Station is a Hub Station should either be Boolean True or False.")
 
     def distance_to(self):
         raise NotImplementedError
