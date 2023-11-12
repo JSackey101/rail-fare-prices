@@ -52,8 +52,7 @@ class RailNetwork:
             CRS.append(station.crs)
         self.stations = {}
         for station in list_of_stations:
-            self.stations.update({station.crs:station})
-
+            self.stations.update({station.crs: station})
 
     def regions(self):
         raise NotImplementedError
@@ -141,15 +140,5 @@ class RailNetwork:
 
         plt.show()
         return
-
-brighton = Station("Brighton", "South East", "BTN", 50.829659, -0.141234, True)
-kings_cross = Station("London Kings Cross", "London", "KGX", 51.530827,-0.122907, True)
-edinburgh_park = Station("Edinburgh Park", "Scotland", "EDP", 55.927615,-3.307829, False)
-list_of_stations = [brighton, kings_cross, edinburgh_park]
-rail_network = RailNetwork(list_of_stations)
-print(list(rail_network.stations))
-print(f"List of stations passed in: {list_of_stations}")
-print(f"Stations in the network: {list(rail_network.stations.values())}")
-print(f"Keys of rail_network.stations: {list(rail_network.stations.keys())}")
 
 
