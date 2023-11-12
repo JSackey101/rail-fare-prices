@@ -37,8 +37,15 @@ class Station:
         if type(hub) != bool:
             raise TypeError("Whether the Station is a Hub Station should either be Boolean True or False.")
 
-    def distance_to(self):
-        raise NotImplementedError
+    def distance_to(self, other_station):
+        r = 6371
+        lat1 = self.lat
+        lat2 = other_station.lat
+        lon1 = self.lon
+        lon2 = other_station.lon
+        distance = 2*r*np.arcsin(np.sqrt((np.power((np.sin((lat2-lat1)/2)),2)) + np.cos(lat1) * np.cos(lat2) * np.power((np.sin((lon2 - lon1) / 2)), 2)))
+        return distance
+
 
 
 class RailNetwork:
@@ -140,5 +147,4 @@ class RailNetwork:
 
         plt.show()
         return
-
 
