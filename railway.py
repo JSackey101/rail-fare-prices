@@ -37,6 +37,18 @@ class Station:
         if type(hub) != bool:
             raise TypeError("Whether the Station is a Hub Station should either be Boolean True or False.")
 
+    def __repr__(self):
+        if self.hub:
+            return "Station(" + self.crs + "-" + self.name + "/" + self.region + "-hub)"
+        if not self.hub:
+            return "Station(" + self.crs + "-" + self.name + "/" + self.region + ")"
+
+    def __str__(self):
+        if self.hub:
+            return "Station(" + self.crs + "-" + self.name + "/" + self.region + "-hub)"
+        if not self.hub:
+            return "Station(" + self.crs + "-" + self.name + "/" + self.region + ")"
+
     def distance_to(self, other_station):
         r = 6371
         lat1 = self.lat
