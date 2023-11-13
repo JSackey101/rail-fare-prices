@@ -11,9 +11,10 @@ def read_rail_network(filepath):
         for row in stations_data:
             station = Station(row[header_info.index("name")], row[header_info.index("region")], row[header_info.index("crs")], float(row[header_info.index("latitude")]), float(row[header_info.index("longitude")]), bool(row[header_info.index("hub")]))
             list_of_stations.append(station)
-        railnetwork = RailNetwork(list_of_stations)
+        rail_network = RailNetwork(list_of_stations)
     uk_stations.close()
-    return railnetwork
+    return rail_network
+
 
 
 

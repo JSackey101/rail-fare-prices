@@ -71,10 +71,15 @@ class RailNetwork:
             CRS.append(station.crs)
         self.stations = {}
         for station in list_of_stations:
+            print(station)
             self.stations.update({station.crs: station})
 
     def regions(self):
-        raise NotImplementedError
+        unique_regions = []
+        for crs, station in self.stations.items():
+            unique_regions.append(station.region)
+        return np.unique(unique_regions)
+
 
     def n_stations(self):
         raise NotImplementedError
@@ -159,4 +164,3 @@ class RailNetwork:
 
         plt.show()
         return
-
