@@ -3,7 +3,6 @@ from railway import fare_price, Station, RailNetwork
 import numpy as np
 
 
-
 @pytest.mark.parametrize("name, region, crs, lat, lon, hub",
                          [("Brighton", "South East", "Btn", 50.829659, -0.141234, True),
                           ("Brighton", "South East", "BTNN", 50.829659, -0.141234, True),
@@ -55,10 +54,13 @@ def test_crs_codes():
 
 def test_distance_to():
     brighton = Station("Brighton", "South East", "BTN", 50.829659, -0.141234, True)
-    kings_cross = Station("London Kings Cross", "London", "KGX", 51.530827,-0.122907, True)
-    expected = 2 * 6371 * np.arcsin(np.sqrt((np.power((np.sin((kings_cross.lat - brighton.lat) / 2)), 2)) + np.cos(brighton.lat) * np.cos(kings_cross.lat) * np.power((np.sin((kings_cross.lon - brighton.lon) / 2)),2)))
+    kings_cross = Station("London Kings Cross", "London", "KGX", 51.530827, -0.122907, True)
+    expected = 2 * 6371 * np.arcsin(np.sqrt((np.power((np.sin((kings_cross.lat - brighton.lat) / 2)), 2)) +
+                                            np.cos(brighton.lat) * np.cos(kings_cross.lat) *
+                                            np.power((np.sin((kings_cross.lon - brighton.lon) / 2)), 2)))
     result = brighton.distance_to(kings_cross)
     assert result == expected
+
 
 def test_distance_to_reversible():
     brighton = Station("Brighton", "South East", "BTN", 50.829659, -0.141234, True)
@@ -66,4 +68,3 @@ def test_distance_to_reversible():
     result_one = brighton.distance_to(kings_cross)
     result_two = kings_cross.distance_to(brighton)
     assert result_one == result_two
-
