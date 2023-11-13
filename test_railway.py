@@ -112,9 +112,29 @@ def test_hub_stations_one_region(stations):
     expected = [kings_cross]
     assert expected == result
 
+
 def test_hub_stations_error(stations):
     brighton, kings_cross, edinburgh_park = stations
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     rail_network = RailNetwork(list_of_stations)
     with pytest.raises(KeyError):
         rail_network.hub_stations("Spain")
+
+
+def test_closest_hub(stations):
+    brighton, kings_cross, edinburgh_park = stations
+    for station in stations:
+        station.region = "South East"
+    list_of_stations = [brighton, kings_cross, edinburgh_park]
+    rail_network = RailNetwork(list_of_stations)
+    expected = kings_cross
+    result = rail_network.closest_hub(edinburgh_park)
+    assert expected == result
+
+
+def test_closest_hub_error(stations):
+    brighton, kings_cross, edinburgh_park = stations
+    list_of_stations = [brighton, kings_cross, edinburgh_park]
+    rail_network = RailNetwork(list_of_stations)
+    with pytest.raises(KeyError):
+        rail_network.closest_hub(edinburgh_park)
