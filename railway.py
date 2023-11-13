@@ -55,9 +55,10 @@ class Station:
         lat2 = other_station.lat
         lon1 = self.lon
         lon2 = other_station.lon
-        distance = 2*r*np.arcsin(np.sqrt((np.power((np.sin((lat2-lat1)/2)),2)) + np.cos(lat1) * np.cos(lat2) * np.power((np.sin((lon2 - lon1) / 2)), 2)))
+        distance = 2 * r * np.arcsin(np.sqrt(
+            (np.power((np.sin((lat2 - lat1) / 2)), 2)) + np.cos(lat1) * np.cos(lat2) * np.power(
+                (np.sin((lon2 - lon1) / 2)), 2)))
         return distance
-
 
 
 class RailNetwork:
@@ -79,7 +80,6 @@ class RailNetwork:
             unique_regions.append(station.region)
         return np.unique(unique_regions)
 
-
     def n_stations(self):
         return len(self.stations)
 
@@ -99,7 +99,15 @@ class RailNetwork:
         return hub_stations
 
     def closest_hub(self, s):
-        raise NotImplementedError
+        regional_stations = []
+        distances = []
+        for crs, station in self.stations.items():
+            if station.region == s.region and station.hub and s.crs is not station.crs:
+                regional_stations.append(station)
+                distances.append(station.distance_to(s))
+        if not regional_stations:
+            raise KeyError("The given station has no hub stations in its region.")
+        return regional_stations[distances.index(min(distances))]
 
     def journey_planner(self, start, dest):
         raise NotImplementedError
@@ -175,3 +183,4 @@ class RailNetwork:
 
         plt.show()
         return
+
