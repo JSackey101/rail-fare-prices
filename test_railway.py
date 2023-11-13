@@ -72,5 +72,16 @@ def test_distance_to_reversible(stations):
     result_two = kings_cross.distance_to(brighton)
     assert result_one == result_two
 
+def test_regions(stations):
+    brighton, kings_cross, edinburgh_park = stations
+    kings_cross = Station("London Kings Cross", "South East", "KGX", 51.530827, -0.122907, True)
+    list_of_stations = [brighton, kings_cross, edinburgh_park]
+    rail_network = RailNetwork(list_of_stations)
+    expected = ["Scotland", "South East"]
+    result = rail_network.regions()
+    assert result.sort() == expected.sort()
+
+
+
 
 
