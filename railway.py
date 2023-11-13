@@ -71,7 +71,6 @@ class RailNetwork:
             CRS.append(station.crs)
         self.stations = {}
         for station in list_of_stations:
-            print(station)
             self.stations.update({station.crs: station})
 
     def regions(self):
