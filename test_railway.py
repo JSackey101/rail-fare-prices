@@ -81,6 +81,14 @@ def test_regions(stations):
     result = rail_network.regions()
     assert result.sort() == expected.sort()
 
+def test_n_stations(stations):
+    brighton, kings_cross, edinburgh_park = stations
+    list_of_stations = [brighton, kings_cross, edinburgh_park]
+    rail_network = RailNetwork(list_of_stations)
+    expected = 3
+    result = rail_network.n_stations()
+    assert expected == result
+
 
 
 
