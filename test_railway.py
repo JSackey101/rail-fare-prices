@@ -36,25 +36,29 @@ def test_type_error_station(name, region, crs, lat, lon, hub):
     with pytest.raises(TypeError):
         Station(name, region, crs, lat, lon, hub)
 
-
-def test_correct_station_input():
+@pytest.fixture()
+def stations():
     brighton = Station("Brighton", "South East", "BTN", 50.829659, -0.141234, True)
+    kings_cross = Station("London Kings Cross", "London", "KGX", 51.530827,-0.122907, True)
+    edinburgh_park = Station("Edinburgh Park", "Scotland", "EDP", 55.927615,-3.307829, False)
+    return brighton, kings_cross, edinburgh_park
+
+def test_correct_station_input(stations):
+    brighton, kings_cross, edinburgh_park = stations
     result = [brighton.name, brighton.region, brighton.crs, brighton.lat, brighton.lon, brighton.hub]
     expected = ["Brighton", "South East", "BTN", 50.829659, -0.141234, True]
     assert result == expected
 
 
-def test_crs_codes():
-    brighton = Station("Brighton", "South East", "BTN", 50.829659, -0.141234, True)
+def test_crs_codes(stations):
+    brighton, kings_cross, edinburgh_park = stations
     kings_cross = Station("London Kings Cross", "London", "BTN", 51.530827, -0.122907, True)
-    edinburgh_park = Station("Edinburgh Park", "Scotland", "EDP", 55.927615, -3.307829, False)
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     with pytest.raises(ValueError):
         RailNetwork(list_of_stations)
 
-def test_distance_to():
-    brighton = Station("Brighton", "South East", "BTN", 50.829659, -0.141234, True)
-    kings_cross = Station("London Kings Cross", "London", "KGX", 51.530827, -0.122907, True)
+def test_distance_to(stations):
+    brighton, kings_cross, edinburgh_park = stations
     expected = 2 * 6371 * np.arcsin(np.sqrt((np.power((np.sin((kings_cross.lat - brighton.lat) / 2)), 2)) +
                                             np.cos(brighton.lat) * np.cos(kings_cross.lat) *
                                             np.power((np.sin((kings_cross.lon - brighton.lon) / 2)), 2)))
@@ -62,9 +66,11 @@ def test_distance_to():
     assert result == expected
 
 
-def test_distance_to_reversible():
-    brighton = Station("Brighton", "South East", "BTN", 50.829659, -0.141234, True)
-    kings_cross = Station("London Kings Cross", "London", "KGX", 51.530827, -0.122907, True)
+def test_distance_to_reversible(stations):
+    brighton, kings_cross, edinburgh_park = stations
     result_one = brighton.distance_to(kings_cross)
     result_two = kings_cross.distance_to(brighton)
     assert result_one == result_two
+
+
+
