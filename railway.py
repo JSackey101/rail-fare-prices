@@ -81,7 +81,7 @@ class RailNetwork:
 
 
     def n_stations(self):
-        raise NotImplementedError
+        return len(self.stations)
 
     def hub_stations(self, region):
         raise NotImplementedError
@@ -163,3 +163,4 @@ class RailNetwork:
 
         plt.show()
         return
+
