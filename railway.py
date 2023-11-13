@@ -83,8 +83,20 @@ class RailNetwork:
     def n_stations(self):
         return len(self.stations)
 
-    def hub_stations(self, region):
-        raise NotImplementedError
+    def hub_stations(self, region=None):
+        if region is not None and not any(station.region == region for crs, station in self.stations.items()):
+            raise KeyError("The given region does not exist in this network.")
+        elif region is not None:
+            hub_stations = []
+            for crs, station in self.stations.items():
+                if station.hub and station.region == region:
+                    hub_stations.append(station)
+        else:
+            hub_stations = []
+            for crs, station in self.stations.items():
+                if station.hub:
+                    hub_stations.append(station)
+        return hub_stations
 
     def closest_hub(self, s):
         raise NotImplementedError
@@ -163,4 +175,3 @@ class RailNetwork:
 
         plt.show()
         return
-
