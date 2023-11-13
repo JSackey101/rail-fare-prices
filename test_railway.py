@@ -36,12 +36,14 @@ def test_type_error_station(name, region, crs, lat, lon, hub):
     with pytest.raises(TypeError):
         Station(name, region, crs, lat, lon, hub)
 
+
 @pytest.fixture()
 def stations():
     brighton = Station("Brighton", "South East", "BTN", 50.829659, -0.141234, True)
-    kings_cross = Station("London Kings Cross", "London", "KGX", 51.530827,-0.122907, True)
-    edinburgh_park = Station("Edinburgh Park", "Scotland", "EDP", 55.927615,-3.307829, False)
+    kings_cross = Station("London Kings Cross", "London", "KGX", 51.530827, -0.122907, True)
+    edinburgh_park = Station("Edinburgh Park", "Scotland", "EDP", 55.927615, -3.307829, False)
     return brighton, kings_cross, edinburgh_park
+
 
 def test_correct_station_input(stations):
     brighton, kings_cross, edinburgh_park = stations
@@ -56,6 +58,7 @@ def test_crs_codes(stations):
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     with pytest.raises(ValueError):
         RailNetwork(list_of_stations)
+
 
 def test_distance_to(stations):
     brighton, kings_cross, edinburgh_park = stations
@@ -72,6 +75,7 @@ def test_distance_to_reversible(stations):
     result_two = kings_cross.distance_to(brighton)
     assert result_one == result_two
 
+
 def test_regions(stations):
     brighton, kings_cross, edinburgh_park = stations
     kings_cross = Station("London Kings Cross", "South East", "KGX", 51.530827, -0.122907, True)
@@ -80,6 +84,7 @@ def test_regions(stations):
     expected = ["Scotland", "South East"]
     result = rail_network.regions()
     assert result.sort() == expected.sort()
+
 
 def test_n_stations(stations):
     brighton, kings_cross, edinburgh_park = stations
@@ -90,6 +95,26 @@ def test_n_stations(stations):
     assert expected == result
 
 
+def test_hub_stations(stations):
+    brighton, kings_cross, edinburgh_park = stations
+    list_of_stations = [brighton, kings_cross, edinburgh_park]
+    rail_network = RailNetwork(list_of_stations)
+    result = rail_network.hub_stations()
+    expected = [brighton, kings_cross]
+    assert expected == result
 
 
+def test_hub_stations_one_region(stations):
+    brighton, kings_cross, edinburgh_park = stations
+    list_of_stations = [brighton, kings_cross, edinburgh_park]
+    rail_network = RailNetwork(list_of_stations)
+    result = rail_network.hub_stations("London")
+    expected = [kings_cross]
+    assert expected == result
 
+def test_hub_stations_error(stations):
+    brighton, kings_cross, edinburgh_park = stations
+    list_of_stations = [brighton, kings_cross, edinburgh_park]
+    rail_network = RailNetwork(list_of_stations)
+    with pytest.raises(KeyError):
+        rail_network.hub_stations("Spain")
