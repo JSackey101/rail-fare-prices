@@ -16,6 +16,7 @@ class Station:
     """
     A class to represent a station.
     """
+
     def __init__(self, name: str, region: str, crs: str, lat: float, lon: float, hub: bool):
         """
         Constructor method that defines all the necessary attributes for station objects created from this class.
@@ -23,39 +24,42 @@ class Station:
         self.name = name
         self.region = region
         self.crs = crs
-        if type(name) != str or type(region) != str or type(crs) != str:
+        if type(name) != str or type(region) != str or type(crs) != str:  # Checks whether any of the name,
+            # region and crs attributes are of a type other than a string.
             raise TypeError("The Station's name, region and CRS code should all be strings.")
-        if len(crs) > 3 or len(crs) < 3 or crs.isupper() is False:
+        if len(crs) > 3 or len(crs) < 3 or crs.isupper() is False:  # Checks whether the length of the crs attribute
+            # is above or below 3 or whether it is not fully uppercase.
             raise ValueError("The Station's CRS code should be a 3-character string that only has UPPERCASE letters")
         self.lat = lat
         self.lon = lon
-        if type(lat) != float or type(lon) != float:
+        if type(lat) != float or type(lon) != float:  # Checks whether either the latitude or longitude attributes
+            # are of a type other than a float.
             raise TypeError("The latitude and longitude of the Station should both be decimal numbers in degrees ("
                             "should be a float value).")
-        if lat < -90.0 or lat > 90.0:
+        if lat < -90.0 or lat > 90.0:  # Checks whether the latitude is below -90.0 degrees or above 90.0 degrees
             raise ValueError("The latitude of the Station should be between -90.0 degrees and 90.0 degrees")
-        if lon < -180.0 or lon > 180.0:
+        if lon < -180.0 or lon > 180.0:  # Checks whether the longitude is below -180.0 degrees or above 180.0 degrees
             raise ValueError("The longitude of the Station should be between -180.0 degrees and 180.0 degrees")
         self.hub = hub
-        if type(hub) != bool:
+        if type(hub) != bool:  # Checks whether the hub attribute is of a type other than a boolean.
             raise TypeError("Whether the Station is a Hub Station should either be Boolean True or False.")
 
     def __repr__(self):
         """
         Method that returns a string when the station objects created from this class are displayed by name.
         """
-        if self.hub:
+        if self.hub:  # Checks whether the station is a hub station
             return "Station(" + self.crs + "-" + self.name + "/" + self.region + "-hub)"
-        if not self.hub:
+        if not self.hub:  # Checks whether the station is not a hub station
             return "Station(" + self.crs + "-" + self.name + "/" + self.region + ")"
 
     def __str__(self):
         """
         Method that returns a string when print is called on station objects created from this class.
         """
-        if self.hub:
+        if self.hub:  # Checks whether the station is a hub station
             return "Station(" + self.crs + "-" + self.name + "/" + self.region + "-hub)"
-        if not self.hub:
+        if not self.hub:  # Checks whether the station is not a hub station
             return "Station(" + self.crs + "-" + self.name + "/" + self.region + ")"
 
     def distance_to(self, other_station):
@@ -63,11 +67,11 @@ class Station:
         Method that finds the distance (in km) between a station object created from this class and another station
         object given as a parameter using the Haversine formula.
         """
-        r = 6371
-        lat1 = self.lat
-        lat2 = other_station.lat
-        lon1 = self.lon
-        lon2 = other_station.lon
+        r = 6371  # Approximate radius of the Earth in km
+        lat1 = self.lat  # Latitude of the station object
+        lat2 = other_station.lat  # Latitude of the other_station object given as a parameter
+        lon1 = self.lon  # Longitude of the station object
+        lon2 = other_station.lon  # Longitude of the other_station object given as a parameter
         distance = 2 * r * np.arcsin(np.sqrt(
             (np.power((np.sin((lat2 - lat1) / 2)), 2)) + np.cos(lat1) * np.cos(lat2) * np.power(
                 (np.sin((lon2 - lon1) / 2)), 2)))
@@ -78,29 +82,34 @@ class RailNetwork:
     """
     A class to represent a rail network.
     """
+
     def __init__(self, list_of_stations):
         """
         Constructor method that defines all the necessary attributes for rail network objects created from this class.
         """
         self.list_of_stations = list_of_stations
-        CRS = []
+        # Goes through the stations in the list of stations given as a parameter, checks their CRS codes against the
+        # ones that have been recorded already, raises an error if the CRS code has been recorded alreay and records
+        # the CRS code if not.
+        crs = []
         for station in list_of_stations:
-            if station.crs in CRS:
+            if station.crs in crs:  # Checks whether the CRS code of the current station object is in the crs list
                 raise ValueError("The CRS code {} is used for more than 1 station. All Stations used to form a "
                                  "RailNetwork must have unique CRS codes.".format(station.crs))
-            CRS.append(station.crs)
-        self.stations = {}
+            crs.append(station.crs)  # Adds the CRS code of the current station to the crs list
+        self.stations = {}  # Creates an empty dictionary in a new class variable
         for station in list_of_stations:
-            self.stations.update({station.crs: station})
+            self.stations.update({station.crs: station})  # Updates the dictionary with a new key, value pair with the
+            # station's CRS code being the key and the station itself being the value
 
     def regions(self):
         """
         Method that returns a list of all unique regions within the rail network object.
         """
         unique_regions = []
-        for crs, station in self.stations.items():
+        for crs, station in self.stations.items():  # Goes through each key, value pair in the stations dictionary
             unique_regions.append(station.region)
-        return np.unique(unique_regions)
+        return np.unique(unique_regions)  # Uses numpy to only return the unique station objects in the list
 
     def n_stations(self):
         """
@@ -115,17 +124,22 @@ class RailNetwork:
         If the optional region parameter is passed, this method would return a list of all the hub stations within
         the rail network object that are also part of the given region instead.
         """
+        # Checks whether the region parameter has been passed and whether the region given is not a region for any of
+        # the stations within the stations dictionary. Returns an error if these conditions are fufilled.
         if region is not None and not any(station.region == region for crs, station in self.stations.items()):
             raise KeyError("The given region does not exist in this network.")
-        elif region is not None:
+        elif region is not None:  # If the above is not fulfilled this checks whether the region parameter has been
+            # passed
+
             hub_stations = []
-            for crs, station in self.stations.items():
-                if station.hub and station.region == region:
+            for crs, station in self.stations.items():  # Goes through each key, value pair in the stations dictionary
+                if station.hub and station.region == region:  # Checks whether the current station object is both a
+                    # hub station and is in the given region
                     hub_stations.append(station)
         else:
             hub_stations = []
-            for crs, station in self.stations.items():
-                if station.hub:
+            for crs, station in self.stations.items():  # Goes through each key, value pair in the stations dictionary
+                if station.hub:  # Checks whether the current station object is a hub station
                     hub_stations.append(station)
         return hub_stations
 
@@ -136,13 +150,19 @@ class RailNetwork:
         """
         regional_stations = []
         distances = []
-        for crs, station in self.stations.items():
+        for crs, station in self.stations.items(): # Goes through each key, value pair in the stations dictionary
+            # Checks whether the current station has the same region as the station object taken as a parameter,
+            # whether the current station is a hub station and whether the CRS code of the current station does not
+            # match the CRS code of the station object taken as a parameter
             if station.region == s.region and station.hub and s.crs is not station.crs:
                 regional_stations.append(station)
-                distances.append(station.distance_to(s))
-        if not regional_stations:
+                distances.append(station.distance_to(s)) # Uses the distance_to method of the current station to
+                # calculate its distance to the station object taken as a parameter
+        if not regional_stations:  # Checks whether the regional_stations list is empty - this indicates that the
+            # given station has no hub stations in its region
             raise KeyError("The given station has no hub stations in its region.")
-        return regional_stations[distances.index(min(distances))]
+        return regional_stations[distances.index(min(distances))] # Returns the closest station through using the
+        # index of the smallest distance in the distances list to index the regional_stations list
 
     def journey_planner(self, start, dest):
         raise NotImplementedError
@@ -218,4 +238,3 @@ class RailNetwork:
 
         plt.show()
         return
-
