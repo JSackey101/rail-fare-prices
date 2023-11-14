@@ -4,19 +4,22 @@ import numpy as np
 
 def fare_price(distance, different_regions, hubs_in_dest_region):
     """
-    A function to compute the fare price using the below inputs and return the result
-
-    :param distance: Distance between the two stations
-    :param different_regions: This is 1 if the stations belong to different regions and 0 otherwise
-    :param hubs_in_dest_region: Number of hub stations in the same region as the destination station
-    :return: Returns the fare price
+    A function to compute the fare price using the distance, different_regions and hubs_in_dest_region parameters
+    with the formula given to calculate fare prices in GBP of direct travel between 2 connected stations and return
+    the result
     """
     fareprice = 1 + distance * np.exp((-1 * distance) / 100) * (1 + (different_regions * hubs_in_dest_region) / 10)
     return fareprice
 
 
 class Station:
+    """
+    A class to represent a station.
+    """
     def __init__(self, name: str, region: str, crs: str, lat: float, lon: float, hub: bool):
+        """
+        Constructor method that defines all the necessary attributes for station objects created from this class.
+        """
         self.name = name
         self.region = region
         self.crs = crs
@@ -38,18 +41,28 @@ class Station:
             raise TypeError("Whether the Station is a Hub Station should either be Boolean True or False.")
 
     def __repr__(self):
+        """
+        Method that returns a string when the station objects created from this class are displayed by name.
+        """
         if self.hub:
             return "Station(" + self.crs + "-" + self.name + "/" + self.region + "-hub)"
         if not self.hub:
             return "Station(" + self.crs + "-" + self.name + "/" + self.region + ")"
 
     def __str__(self):
+        """
+        Method that returns a string when print is called on station objects created from this class.
+        """
         if self.hub:
             return "Station(" + self.crs + "-" + self.name + "/" + self.region + "-hub)"
         if not self.hub:
             return "Station(" + self.crs + "-" + self.name + "/" + self.region + ")"
 
     def distance_to(self, other_station):
+        """
+        Method that finds the distance (in km) between a station object created from this class and another station
+        object given as a parameter using the Haversine formula.
+        """
         r = 6371
         lat1 = self.lat
         lat2 = other_station.lat
@@ -62,7 +75,13 @@ class Station:
 
 
 class RailNetwork:
+    """
+    A class to represent a rail network.
+    """
     def __init__(self, list_of_stations):
+        """
+        Constructor method that defines all the necessary attributes for rail network objects created from this class.
+        """
         self.list_of_stations = list_of_stations
         CRS = []
         for station in list_of_stations:
@@ -75,15 +94,27 @@ class RailNetwork:
             self.stations.update({station.crs: station})
 
     def regions(self):
+        """
+        Method that returns a list of all unique regions within the rail network object.
+        """
         unique_regions = []
         for crs, station in self.stations.items():
             unique_regions.append(station.region)
         return np.unique(unique_regions)
 
     def n_stations(self):
+        """
+        Method that returns the number of stations within the rail network object.
+        """
         return len(self.stations)
 
     def hub_stations(self, region=None):
+        """
+        Method that returns a list of all the hub stations within the rail network object.
+
+        If the optional region parameter is passed, this method would return a list of all the hub stations within
+        the rail network object that are also part of the given region instead.
+        """
         if region is not None and not any(station.region == region for crs, station in self.stations.items()):
             raise KeyError("The given region does not exist in this network.")
         elif region is not None:
@@ -99,6 +130,10 @@ class RailNetwork:
         return hub_stations
 
     def closest_hub(self, s):
+        """
+        Method that takes a station object as a parameter and calculates the nearest hub station that is also within
+        the same region as the station object.
+        """
         regional_stations = []
         distances = []
         for crs, station in self.stations.items():
