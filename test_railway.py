@@ -2,13 +2,18 @@ import pytest
 from railway import fare_price, Station, RailNetwork
 import numpy as np
 
-
+# Used to store various parameters for Station object creation to carry out similar tests more efficiently
 @pytest.mark.parametrize("name, region, crs, lat, lon, hub",
+                         # This CRS code is not completely uppercase
                          [("Brighton", "South East", "Btn", 50.829659, -0.141234, True),
+                            # This CRS code is 4 characters rather than 3
                           ("Brighton", "South East", "BTNN", 50.829659, -0.141234, True),
+                         # This CRS code is 2 characters rather than 3
                           ("Brighton", "South East", "BT", 50.829659, -0.141234, True),
+                          # The below 2 have latitudes outside the accepted range
                           ("Brighton", "South East", "BTN", 91.0, -0.141234, True),
                           ("Brighton", "South East", "BTN", -91.0, -0.141234, True),
+                          # The below 2 have longitudes outside the accepted range
                           ("Brighton", "South East", "BTN", 50.829659, 181.0, True),
                           ("Brighton", "South East", "BTN", 50.829659, -181.0, True)])
 def test_value_error_station(name, region, crs, lat, lon, hub):
@@ -16,7 +21,7 @@ def test_value_error_station(name, region, crs, lat, lon, hub):
     Function to test whether each of the various incorrect inputs (parametrized above) provided to
     the Station class with the purpose of creating Station objects would raise a ValueError.
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError):  # Checks whether a ValueError is raised for each test
         Station(name, region, crs, lat, lon, hub)
 
 
@@ -35,18 +40,24 @@ def test_fare_price():
 
 
 @pytest.mark.parametrize("name, region, crs, lat, lon, hub",
+                         # This has an int value in the name parameter rather than a string
                          [(6, "South East", "BTN", 50.829659, -0.141234, True),
+                          # This has an int value in the region parameter rather than a string
                           ("Brighton", 6, "BTN", 50.829659, -0.141234, True),
+                          # This has an int value in the crs parameter rather than a string
                           ("Brighton", "South East", 6, 50.829659, -0.141234, True),
+                          # The latitude is a str value rather than a float
                           ("Brighton", "South East", "BTN", "50.829659", -0.141234, True),
+                          # The longitude is a str value rather than a float
                           ("Brighton", "South East", "BTN", 50.829659, "-0.141234", True),
+                          # The hub is a str value rather than a bool
                           ("Brighton", "South East", "BTN", 50.829659, -0.141234, "True")])
 def test_type_error_station(name, region, crs, lat, lon, hub):
     """
     Function to test whether each of the various incorrect inputs (parametrized above) provided to
     the Station class with the purpose of creating Station objects would raise a TypeError.
     """
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError):  # Checks whether a TypeError is raised for each test
         Station(name, region, crs, lat, lon, hub)
 
 
@@ -81,6 +92,7 @@ def test_crs_codes(stations):
     Rail Network object must be unique.
     """
     brighton, kings_cross, edinburgh_park = stations
+    # Makes it so that the kings_cross and brighton station objects have the same CRS code
     kings_cross = Station("London Kings Cross", "London", "BTN", 51.530827, -0.122907, True)
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     with pytest.raises(ValueError):
@@ -121,12 +133,14 @@ def test_regions(stations):
     list of 3 (as there are only 2 unique regions here).
     """
     brighton, kings_cross, edinburgh_park = stations
+    # Gives the kings_cross station object the same region as the brighton station object
     kings_cross = Station("London Kings Cross", "South East", "KGX", 51.530827, -0.122907, True)
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     rail_network = RailNetwork(list_of_stations)
     expected = ["Scotland", "South East"]
     result = rail_network.regions()
-    assert result.sort() == expected.sort()
+    assert result.sort() == expected.sort() # Sort is used to ensure that the order of the regions is not what fails
+    # the test as the order does not matter for this test
 
 
 def test_n_stations(stations):
@@ -185,8 +199,8 @@ def test_hub_stations_error(stations):
     brighton, kings_cross, edinburgh_park = stations
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     rail_network = RailNetwork(list_of_stations)
-    with pytest.raises(KeyError):
-        rail_network.hub_stations("Spain")
+    with pytest.raises(KeyError): # Checks whether this test raises a KeyError
+        rail_network.hub_stations("Spain") # Spain is not a region in the above station objects
 
 
 def test_closest_hub(stations):
@@ -200,7 +214,8 @@ def test_closest_hub(stations):
     """
     brighton, kings_cross, edinburgh_park = stations
     for station in stations:
-        station.region = "South East"
+        station.region = "South East"  # Sets the region of all the station objects to the South East so that both
+        # brighton and kings_cross are considered for the test
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     rail_network = RailNetwork(list_of_stations)
     expected = kings_cross
@@ -216,5 +231,5 @@ def test_closest_hub_error(stations):
     brighton, kings_cross, edinburgh_park = stations
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     rail_network = RailNetwork(list_of_stations)
-    with pytest.raises(KeyError):
+    with pytest.raises(KeyError):  # Checks whether this test raises a KeyError
         rail_network.closest_hub(edinburgh_park)
