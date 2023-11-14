@@ -125,9 +125,9 @@ class RailNetwork:
         the rail network object that are also part of the given region instead.
         """
         # Checks whether the region parameter has been passed and whether the region given is not a region for any of
-        # the stations within the stations dictionary. Returns an error if these conditions are fufilled.
+        # the stations within the stations dictionary. Returns an error if these conditions are fulfilled.
         if region is not None and not any(station.region == region for crs, station in self.stations.items()):
-            raise KeyError("The given region does not exist in this network.")
+            raise ValueError("The given region does not exist in this network.")
         elif region is not None:  # If the above is not fulfilled this checks whether the region parameter has been
             # passed
 
@@ -150,22 +150,45 @@ class RailNetwork:
         """
         regional_stations = []
         distances = []
-        for crs, station in self.stations.items(): # Goes through each key, value pair in the stations dictionary
+        for crs, station in self.stations.items():  # Goes through each key, value pair in the stations dictionary
             # Checks whether the current station has the same region as the station object taken as a parameter,
             # whether the current station is a hub station and whether the CRS code of the current station does not
             # match the CRS code of the station object taken as a parameter
             if station.region == s.region and station.hub and s.crs is not station.crs:
                 regional_stations.append(station)
-                distances.append(station.distance_to(s)) # Uses the distance_to method of the current station to
+                distances.append(station.distance_to(s))  # Uses the distance_to method of the current station to
                 # calculate its distance to the station object taken as a parameter
         if not regional_stations:  # Checks whether the regional_stations list is empty - this indicates that the
             # given station has no hub stations in its region
-            raise KeyError("The given station has no hub stations in its region.")
-        return regional_stations[distances.index(min(distances))] # Returns the closest station through using the
+            raise ValueError("The given station has no hub stations in its region.")
+        return regional_stations[distances.index(min(distances))]  # Returns the closest station through using the
         # index of the smallest distance in the distances list to index the regional_stations list
 
     def journey_planner(self, start, dest):
-        raise NotImplementedError
+        if not any(start == crs for crs, station in self.stations.items()):
+            raise ValueError("The CRS code provided for the starting station does not match the CRS code of any "
+                             "station within the network")
+        elif not any(dest == crs for crs, station in self.stations.items()):
+            raise ValueError("The CRS code provided for the destination station does not match the CRS code of any "
+                             "station within the network")
+        else:
+            for crs, station in self.stations.items():
+                if start == crs:
+                    start_station = station
+                if dest == crs:
+                    dest_station = station
+            if start_station.region == dest_station.region or start_station.hub and dest_station.hub:
+                return [start_station, dest_station]
+            else:
+                closest_hub_to_start = self.closest_hub(start_station)
+                closest_hub_to_dest = self.closest_hub(dest_station)
+                if not start_station.hub and not dest_station.hub:
+                    return [start_station, closest_hub_to_start, closest_hub_to_dest, dest_station]
+                elif start_station.hub and not dest_station.hub:
+                    return [start_station, closest_hub_to_dest, dest_station]
+                elif not start_station.hub and dest_station.hub:
+                    return [start_station, closest_hub_to_start, dest_station]
+
 
     def journey_fare(self, start, dest, summary):
         raise NotImplementedError
@@ -238,3 +261,4 @@ class RailNetwork:
 
         plt.show()
         return
+

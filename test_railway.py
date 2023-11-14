@@ -2,13 +2,14 @@ import pytest
 from railway import fare_price, Station, RailNetwork
 import numpy as np
 
+
 # Used to store various parameters for Station object creation to carry out similar tests more efficiently
 @pytest.mark.parametrize("name, region, crs, lat, lon, hub",
                          # This CRS code is not completely uppercase
                          [("Brighton", "South East", "Btn", 50.829659, -0.141234, True),
-                            # This CRS code is 4 characters rather than 3
+                          # This CRS code is 4 characters rather than 3
                           ("Brighton", "South East", "BTNN", 50.829659, -0.141234, True),
-                         # This CRS code is 2 characters rather than 3
+                          # This CRS code is 2 characters rather than 3
                           ("Brighton", "South East", "BT", 50.829659, -0.141234, True),
                           # The below 2 have latitudes outside the accepted range
                           ("Brighton", "South East", "BTN", 91.0, -0.141234, True),
@@ -139,7 +140,7 @@ def test_regions(stations):
     rail_network = RailNetwork(list_of_stations)
     expected = ["Scotland", "South East"]
     result = rail_network.regions()
-    assert result.sort() == expected.sort() # Sort is used to ensure that the order of the regions is not what fails
+    assert result.sort() == expected.sort()  # Sort is used to ensure that the order of the regions is not what fails
     # the test as the order does not matter for this test
 
 
@@ -193,14 +194,14 @@ def test_hub_stations_one_region(stations):
 def test_hub_stations_error(stations):
     """
     Function to test whether, when using the optional parameter of providing a region to the hub_stations method of
-    the RailNetwork class, the method correctly raises a KeyError if the optional parameter is not a region that any
+    the RailNetwork class, the method correctly raises a ValueError if the optional parameter is not a region that any
     of the station objects belong to.
     """
     brighton, kings_cross, edinburgh_park = stations
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     rail_network = RailNetwork(list_of_stations)
-    with pytest.raises(KeyError): # Checks whether this test raises a KeyError
-        rail_network.hub_stations("Spain") # Spain is not a region in the above station objects
+    with pytest.raises(ValueError):  # Checks whether this test raises a ValueError
+        rail_network.hub_stations("Spain")  # Spain is not a region in the above station objects
 
 
 def test_closest_hub(stations):
@@ -225,11 +226,11 @@ def test_closest_hub(stations):
 
 def test_closest_hub_error(stations):
     """
-    Function to test whether the closest_hub method of the RailNetwork class correctly raises a KeyError if no hub
+    Function to test whether the closest_hub method of the RailNetwork class correctly raises a ValueError if no hub
     stations exist within the same region as the station object given as a parameter for the method.
     """
     brighton, kings_cross, edinburgh_park = stations
     list_of_stations = [brighton, kings_cross, edinburgh_park]
     rail_network = RailNetwork(list_of_stations)
-    with pytest.raises(KeyError):  # Checks whether this test raises a KeyError
+    with pytest.raises(ValueError):  # Checks whether this test raises a ValueError
         rail_network.closest_hub(edinburgh_park)
