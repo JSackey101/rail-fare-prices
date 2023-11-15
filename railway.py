@@ -73,8 +73,8 @@ class Station:
         lon1 = self.lon  # Longitude of the station object
         lon2 = other_station.lon  # Longitude of the other_station object given as a parameter
         distance = 2 * r * np.arcsin(np.sqrt(
-            (np.power((np.sin((lat2 - lat1) / 2)), 2)) + np.cos(lat1) * np.cos(lat2) * np.power(
-                (np.sin((lon2 - lon1) / 2)), 2)))
+            (np.power((np.sin((lat2 - lat1) / 2 * np.pi/180)), 2)) + (np.cos(lat1 * np.pi/180) * np.cos(lat2 * np.pi/180) * np.power(
+                (np.sin((lon2 - lon1) / 2 * np.pi/180)), 2))))
         return distance
 
 
@@ -165,32 +165,71 @@ class RailNetwork:
         # index of the smallest distance in the distances list to index the regional_stations list
 
     def journey_planner(self, start, dest):
-        if not any(start == crs for crs, station in self.stations.items()):
+        """
+        Method that takes 2 CRS codes as parameters, being a CRS code for the station the journey starts from and a
+        CRS code for the station the journey end at and returns a list of stations that would be travelled to for the
+        journey.
+        """
+        if not any(start == crs for crs, station in self.stations.items()):  # Checks whether the CRS code given in
+            # the start parameter matches the CRS code of any of the station objects in the network
             raise ValueError("The CRS code provided for the starting station does not match the CRS code of any "
                              "station within the network")
-        elif not any(dest == crs for crs, station in self.stations.items()):
+        elif not any(dest == crs for crs, station in self.stations.items()): # Checks whether the CRS code given in
+            # the dest parameter matches the CRS code of any of the station objects in the network
             raise ValueError("The CRS code provided for the destination station does not match the CRS code of any "
                              "station within the network")
-        else:
-            for crs, station in self.stations.items():
-                if start == crs:
-                    start_station = station
-                if dest == crs:
-                    dest_station = station
+        else: # Works if both CRS codes match those of station objects found in the network
+            for crs, station in self.stations.items(): # Goes through each key, value pair in the stations dictionary
+                if start == crs:  # Checks whether the current CRS code matches the one given in the start parameter
+                    start_station = station  # Sets a new start variable to the station object
+                if dest == crs:  # Checks whether the current CRS code matches the one given in the start parameter
+                    dest_station = station  # Sets a new destination variable to the station object
+            # Returns a list containing the start and destination station indicating a 1 leg journey if either the
+            # regions of both station variables are the same or both station variables are hub stations
             if start_station.region == dest_station.region or start_station.hub and dest_station.hub:
                 return [start_station, dest_station]
             else:
+                # Uses the closest_hub method to determine the closest hub stations to both the start and the dest
+                # station objects
                 closest_hub_to_start = self.closest_hub(start_station)
                 closest_hub_to_dest = self.closest_hub(dest_station)
+                # Checks whether both station objects are not hub stations and returns a list containing the start
+                # station, the closest hub station to the start station, the closest hub station to the destination
+                # station and the destination station if this is the case
                 if not start_station.hub and not dest_station.hub:
                     return [start_station, closest_hub_to_start, closest_hub_to_dest, dest_station]
+                # Checks whether only the destination station is not a hub station and returns a list containing the
+                # start station. the closest hub station to the destination station and the destination station if
+                # this is the case
                 elif start_station.hub and not dest_station.hub:
                     return [start_station, closest_hub_to_dest, dest_station]
+                # Checks whether only the starting station is not a hub station and returns a list containing the
+                # start station, the closest hub station to the start station and the destination station if this is
+                # the case
                 elif not start_station.hub and dest_station.hub:
                     return [start_station, closest_hub_to_start, dest_station]
 
-    def journey_fare(self, start, dest, summary):
-        raise NotImplementedError
+    def journey_fare(self, start, dest, summary=False):
+        journey_route = self.journey_planner(start, dest)
+        fare = 0
+        diff_regions = 0
+        for index in range(len(journey_route)-1):
+            start_station = journey_route[index]
+            dest_station = journey_route[index+1]
+            if start_station.region != dest_station.region:
+                diff_regions = 1
+            print(start_station)
+            print(start_station.lat, start_station.lon)
+            print(dest_station.lat, dest_station.lon)
+            print(dest_station)
+            print(diff_regions)
+            distance = float(start_station.distance_to(dest_station))
+            print(distance)
+            regional_hubs_in_dest = int(len(self.hub_stations(dest_station.region)))
+            print(regional_hubs_in_dest)
+            fare += fare_price(distance, diff_regions, regional_hubs_in_dest)
+        return fare
+
 
     def plot_fares_to(self, crs_code, save, ADDITIONAL_ARGUMENTS):
         raise NotImplementedError

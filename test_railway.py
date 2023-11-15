@@ -109,9 +109,9 @@ def test_distance_to(stations):
     Cross to the calculation done within this function using the Haversine formula.
     """
     brighton, kings_cross, edinburgh_park = stations
-    expected = 2 * 6371 * np.arcsin(np.sqrt((np.power((np.sin((kings_cross.lat - brighton.lat) / 2)), 2)) +
-                                            np.cos(brighton.lat) * np.cos(kings_cross.lat) *
-                                            np.power((np.sin((kings_cross.lon - brighton.lon) / 2)), 2)))
+    expected = 2 * 6371 * np.arcsin(np.sqrt((np.power((np.sin((kings_cross.lat - brighton.lat) / 2 * np.pi/180)), 2)) +
+                                            np.cos(brighton.lat * np.pi/180) * np.cos(kings_cross.lat * np.pi/180) *
+                                            np.power((np.sin((kings_cross.lon - brighton.lon) / 2 * np.pi/180)), 2)))
     result = brighton.distance_to(kings_cross)
     assert result == expected
 
@@ -262,7 +262,7 @@ def test_journey_planner_one_leg(csv_network, start, dest, index_one, index_two)
 def test_journey_planner_three_leg(csv_network):
     rail_network, stations = csv_network
     result = rail_network.journey_planner("EDP", "EDG")
-    expected = [stations[741], stations[1671], stations[1300], stations[739]]
+    expected = [stations[741], stations[2025], stations[1300], stations[739]]
     assert result == expected
 
 
