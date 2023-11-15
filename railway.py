@@ -74,8 +74,8 @@ class Station:
         lon2 = other_station.lon  # Longitude of the other_station object given as a parameter
         distance = 2 * r * np.arcsin(np.sqrt(
             (np.power((np.sin(np.radians((lat2 - lat1) / 2))), 2)) + (
-                        np.cos(np.radians(lat1)) * np.cos(np.radians(lat2)) * np.power(
-                    (np.sin(np.radians((lon2 - lon1) / 2))), 2))))
+                    np.cos(np.radians(lat1)) * np.cos(np.radians(lat2)) * np.power(
+                (np.sin(np.radians((lon2 - lon1) / 2))), 2))))
         return distance
 
 
@@ -245,8 +245,31 @@ class RailNetwork:
             print(summary_line_one + "\n" + summary_line_two + "\n" + "Fare: \u00a3{}".format(round(fare, 2)) + "\n")
         return fare
 
-    def plot_fares_to(self, crs_code, save, ADDITIONAL_ARGUMENTS):
-        raise NotImplementedError
+    def plot_fares_to(self, crs_code, save=False, bins=10, colour="red", edge_colour="none", line_width=1):
+        network = self.list_of_stations
+        fares = []
+        for station in network:
+            if station.crs == crs_code:
+                input_station = station
+                continue
+            try:
+                journey_cost = self.journey_fare(station.crs, crs_code)
+                fares.append(journey_cost)
+            except ValueError:
+                continue
+        if save:
+            plt.figure()
+            plt.hist(fares, bins, color=colour, ec=edge_colour, lw=line_width)
+            plt.xlabel("Fare price (\u00a3)")
+            plt.title("Fare Prices to {}".format(input_station.name.replace(" ", "_")))
+            plt.savefig("Fare_prices_to_{}".format(input_station.name.replace(" ", "_")))
+            print("\nFigure has been saved.")
+        else:
+            plt.figure()
+            plt.hist(fares, bins, color=colour, ec=edge_colour, lw=line_width)
+            plt.xlabel("Fare price (\u00a3)")
+            plt.title("Fare Prices to {}".format(input_station.name.replace(" ", "_")))
+            plt.show()
 
     def plot_network(self, marker_size: int = 5) -> None:
         """
