@@ -111,8 +111,8 @@ def test_distance_to(stations):
     brighton, kings_cross, edinburgh_park = stations
     expected = 2 * 6371 * np.arcsin(np.sqrt(
         (np.power((np.sin(np.radians((kings_cross.lat - brighton.lat) / 2))), 2)) + (
-                    np.cos(np.radians(brighton.lat)) * np.cos(np.radians(kings_cross.lat)) * np.power(
-                (np.sin(np.radians((kings_cross.lon - brighton.lon) / 2))), 2))))
+                np.cos(np.radians(brighton.lat)) * np.cos(np.radians(kings_cross.lat)) * np.power(
+            (np.sin(np.radians((kings_cross.lon - brighton.lon) / 2))), 2))))
     result = brighton.distance_to(kings_cross)
     assert result == expected
 
@@ -252,7 +252,8 @@ def csv_network():
 
 
 @pytest.mark.parametrize("start, dest, index_one, index_two",
-                         [("BTN", "LRB", 322, 1354), ("BTN", "KGX", 322, 1350)])
+                         [("BTN", "LRB", 322, 1354),
+                          ("BTN", "KGX", 322, 1350)])
 def test_journey_planner_one_leg(csv_network, start, dest, index_one, index_two):
     rail_network, stations = csv_network
     result = rail_network.journey_planner(start, dest)
@@ -268,16 +269,29 @@ def test_journey_planner_three_leg(csv_network):
 
 
 @pytest.mark.parametrize("start, dest, index_one, index_two, index_three",
-                         [("DBY", "DPT", 640, 777, 641), ("DPT", "DBY", 641, 777, 640)])
+                         [("DBY", "DPT", 640, 777, 641),
+                          ("DPT", "DBY", 641, 777, 640)])
 def test_journey_planner_two_leg(csv_network, start, dest, index_one, index_two, index_three):
     rail_network, stations = csv_network
     result = rail_network.journey_planner(start, dest)
     expected = [stations[index_one], stations[index_two], stations[index_three]]
     assert result == expected
 
+
 @pytest.mark.parametrize("start, dest",
-                         [("ZZZ", "LRB"), ("BTN", "ZZZ")])
+                         [("ZZZ", "LRB"),
+                          ("BTN", "ZZZ")])
 def test_journey_planner_error(csv_network, start, dest):
     rail_network, stations = csv_network
     with pytest.raises(ValueError):
         rail_network.journey_planner(start, dest)
+
+
+@pytest.mark.parametrize("start, dest, expected",
+                         [("BTN", "LRB", 1.845584326222102),
+                          ("DBY", "DPT", 54.97848449384277),
+                          ("EDP", "EDG", 51.97956517575288)])
+def test_journey_fare(csv_network, start, dest, expected):
+    rail_network, stations = csv_network
+    result = rail_network.journey_fare(start, dest)
+    assert result == expected
