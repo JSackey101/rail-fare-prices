@@ -109,9 +109,10 @@ def test_distance_to(stations):
     Cross to the calculation done within this function using the Haversine formula.
     """
     brighton, kings_cross, edinburgh_park = stations
-    expected = 2 * 6371 * np.arcsin(np.sqrt((np.power((np.sin((kings_cross.lat - brighton.lat) / 2 * np.pi/180)), 2)) +
-                                            np.cos(brighton.lat * np.pi/180) * np.cos(kings_cross.lat * np.pi/180) *
-                                            np.power((np.sin((kings_cross.lon - brighton.lon) / 2 * np.pi/180)), 2)))
+    expected = 2 * 6371 * np.arcsin(np.sqrt(
+        (np.power((np.sin(np.radians((kings_cross.lat - brighton.lat) / 2))), 2)) + (
+                    np.cos(np.radians(brighton.lat)) * np.cos(np.radians(kings_cross.lat)) * np.power(
+                (np.sin(np.radians((kings_cross.lon - brighton.lon) / 2))), 2))))
     result = brighton.distance_to(kings_cross)
     assert result == expected
 

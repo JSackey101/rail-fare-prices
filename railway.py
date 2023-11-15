@@ -73,8 +73,8 @@ class Station:
         lon1 = self.lon  # Longitude of the station object
         lon2 = other_station.lon  # Longitude of the other_station object given as a parameter
         distance = 2 * r * np.arcsin(np.sqrt(
-            (np.power((np.sin((lat2 - lat1) / 2 * np.pi/180)), 2)) + (np.cos(lat1 * np.pi/180) * np.cos(lat2 * np.pi/180) * np.power(
-                (np.sin((lon2 - lon1) / 2 * np.pi/180)), 2))))
+            (np.power((np.sin(np.radians((lat2 - lat1) / 2))), 2)) + (np.cos(np.radians(lat1)) * np.cos(np.radians(lat2)) * np.power(
+                (np.sin(np.radians((lon2 - lon1) / 2))), 2))))
         return distance
 
 
