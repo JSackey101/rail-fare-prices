@@ -360,7 +360,8 @@ def test_journey_fare(csv_network, start, dest, expected):
 
 def test_plot_fares_to_no_error(csv_network):
     """
-    Function to test whether the plot_fares_to method of the RailNetwork class raises no ValueErrors in its operation
+    Function to test whether the plot_fares_to method of the RailNetwork class raises no ValueErrors when it is
+    unable to plan a journey between the input station object and another station object in the network.
     """
     rail_network, stations = csv_network  # Gets the rail_network object and list of stations I created in the
     # csv_network() function
