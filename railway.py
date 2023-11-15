@@ -4,9 +4,12 @@ import numpy as np
 
 def fare_price(distance, different_regions, hubs_in_dest_region):
     """
-    A function to compute the fare price using the distance, different_regions and hubs_in_dest_region parameters
-    with the formula given to calculate fare prices in GBP of direct travel between 2 connected stations and return
-    the result
+    A function to compute the fare price using the
+    - distance - Between 2 stations in km -> Float
+    - different_regions - Whether the stations are in different regions (either 1 or 0) -> Integer
+    - hubs_in_dest_region - Number of hub stations in the same region as the destination station -> Integer
+    parameters with the formula given to calculate fare prices in GBP of direct travel between 2 connected stations and
+    return the result
     """
     fareprice = 1 + distance * np.exp((-1 * distance) / 100) * (1 + (different_regions * hubs_in_dest_region) / 10)
     return fareprice
@@ -135,7 +138,9 @@ class RailNetwork:
         """
         Method that returns a list of all the hub stations within the rail network object.
 
-        If the optional region parameter is passed, this method would return a list of all the hub stations within
+        If the optional
+        - region - Region you wish to find all the hub stations in. -> string
+        parameter is passed, this method would return a list of all the hub stations within
         the rail network object that are also part of the given region instead. By default, this parameter is "None".
         """
         # Checks whether the region parameter has been passed and whether the region given is not a region for any of
@@ -180,9 +185,10 @@ class RailNetwork:
 
     def journey_planner(self, start, dest):
         """
-        Method that takes 2 CRS codes as parameters, being a CRS code for the station the journey starts from and a
-        CRS code for the station the journey end at and returns a list of stations that would be travelled to for the
-        journey.
+        Method that takes 2 CRS codes as parameters
+        - start - The CRS code of the starting station -> string
+        - dest - The CRS code of the destination station -> string
+        and returns a list of stations that would be travelled to for the journey.
         """
         if not any(start == crs for crs, station in self.stations.items()):  # Checks whether the CRS code given in
             # the start parameter matches the CRS code of any of the station objects in the network
@@ -225,9 +231,10 @@ class RailNetwork:
 
     def journey_fare(self, start, dest, summary=False):
         """
-        Method that takes 2 CRS codes as parameters, being a CRS code for the station the journey starts from and a
-        CRS code for the station the journey ends at and returns a calculated fare price for a journey between the
-        two stations.
+        Method that takes 2 CRS codes as parameters,
+        - start - The CRS code of the starting station -> string
+        - dest - The CRS code of the destination station -> string
+        and returns a calculated fare price for a journey between the two stations.
 
         Optionally takes summary as a parameter which prints a summary of the journey and its fare price if it is True.
         This is by default False.
