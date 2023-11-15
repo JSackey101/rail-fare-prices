@@ -73,8 +73,9 @@ class Station:
         lon1 = self.lon  # Longitude of the station object
         lon2 = other_station.lon  # Longitude of the other_station object given as a parameter
         distance = 2 * r * np.arcsin(np.sqrt(
-            (np.power((np.sin(np.radians((lat2 - lat1) / 2))), 2)) + (np.cos(np.radians(lat1)) * np.cos(np.radians(lat2)) * np.power(
-                (np.sin(np.radians((lon2 - lon1) / 2))), 2))))
+            (np.power((np.sin(np.radians((lat2 - lat1) / 2))), 2)) + (
+                        np.cos(np.radians(lat1)) * np.cos(np.radians(lat2)) * np.power(
+                    (np.sin(np.radians((lon2 - lon1) / 2))), 2))))
         return distance
 
 
@@ -174,12 +175,12 @@ class RailNetwork:
             # the start parameter matches the CRS code of any of the station objects in the network
             raise ValueError("The CRS code provided for the starting station does not match the CRS code of any "
                              "station within the network")
-        elif not any(dest == crs for crs, station in self.stations.items()): # Checks whether the CRS code given in
+        elif not any(dest == crs for crs, station in self.stations.items()):  # Checks whether the CRS code given in
             # the dest parameter matches the CRS code of any of the station objects in the network
             raise ValueError("The CRS code provided for the destination station does not match the CRS code of any "
                              "station within the network")
-        else: # Works if both CRS codes match those of station objects found in the network
-            for crs, station in self.stations.items(): # Goes through each key, value pair in the stations dictionary
+        else:  # Works if both CRS codes match those of station objects found in the network
+            for crs, station in self.stations.items():  # Goes through each key, value pair in the stations dictionary
                 if start == crs:  # Checks whether the current CRS code matches the one given in the start parameter
                     start_station = station  # Sets a new start variable to the station object
                 if dest == crs:  # Checks whether the current CRS code matches the one given in the start parameter
@@ -212,24 +213,37 @@ class RailNetwork:
     def journey_fare(self, start, dest, summary=False):
         journey_route = self.journey_planner(start, dest)
         fare = 0
-        diff_regions = 0
-        for index in range(len(journey_route)-1):
+        summary_line_one = "Journey from {0} ({1}) to {2} ({3})".format(journey_route[0].name, journey_route[0].crs,
+                                                                        journey_route[-1].name, journey_route[-1].crs)
+        if len(journey_route) == 2:
+            summary_line_two = summary_line_two = "Route: {0} -> {1}".format(journey_route[0].crs, journey_route[1].crs)
+        elif len(journey_route) == 3:
+            summary_line_two = summary_line_two = "Route: {0} -> {1} ({2}) -> {3}".format(journey_route[0].crs,
+                                                                                          journey_route[1].crs,
+                                                                                          journey_route[1].name,
+                                                                                          journey_route[2].crs)
+        elif len(journey_route) == 4:
+            summary_line_two = summary_line_two = "Route: {0} -> {1} ({2}) -> {3} ({4}) -> {5}".format(
+                journey_route[0].crs,
+                journey_route[1].crs,
+                journey_route[1].name,
+                journey_route[2].crs, journey_route[2].name, journey_route[3].crs)
+
+        for index in range(len(journey_route) - 1):
             start_station = journey_route[index]
-            dest_station = journey_route[index+1]
+            if index == 0:
+                summary_line_two.format(start_station.crs)
+            dest_station = journey_route[index + 1]
             if start_station.region != dest_station.region:
                 diff_regions = 1
-            print(start_station)
-            print(start_station.lat, start_station.lon)
-            print(dest_station.lat, dest_station.lon)
-            print(dest_station)
-            print(diff_regions)
+            else:
+                diff_regions = 0
             distance = float(start_station.distance_to(dest_station))
-            print(distance)
             regional_hubs_in_dest = int(len(self.hub_stations(dest_station.region)))
-            print(regional_hubs_in_dest)
             fare += fare_price(distance, diff_regions, regional_hubs_in_dest)
+        if summary:
+            print(summary_line_one + "\n" + summary_line_two + "\n" + "Fare: \u00a3{}".format(round(fare, 2)) + "\n")
         return fare
-
 
     def plot_fares_to(self, crs_code, save, ADDITIONAL_ARGUMENTS):
         raise NotImplementedError
@@ -299,5 +313,3 @@ class RailNetwork:
 
         plt.show()
         return
-
-
