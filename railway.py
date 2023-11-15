@@ -295,7 +295,7 @@ class RailNetwork:
             print(summary_line_one + "\n" + summary_line_two + "\n" + "Fare: \u00a3{}".format(round(fare, 2)) + "\n")
         return fare
 
-    def plot_fares_to(self, crs_code, save=False, bins=10, colour="red", edge_colour="none", line_width=1):
+    def plot_fares_to(self, crs_code, save=False, bins=10, colour="red", edge_colour="none", line_width=1, fill=True):
         """
         Method that takes a station's CRS code as a parameter, generates a list of fare prices of journeys from all
         other stations in the network (excluding the station of the given CRS code) to the station of the given CRS
@@ -310,6 +310,8 @@ class RailNetwork:
         This is by default "none" meaning the edges are not a different colour to the histogram.
         - A line_width parameter which determines the width of the edge of the bars in the histogram.
         This is by default 1.
+        - A fill parameter which decides whether the plot is displayed or not
+        This is by default True meaning the plot is displayed
         """
         network = self.list_of_stations  # Gets the list of stations in the network
         fares = []
@@ -340,7 +342,7 @@ class RailNetwork:
             plt.figure()  # Sets up the figure that the histogram will be plotted on
             # Creates a histogram using the fares data and uses given or default parameters to control how the
             # histogram is plotted
-            plt.hist(fares, bins, color=colour, ec=edge_colour, lw=line_width)
+            plt.hist(fares, bins, color=colour, ec=edge_colour, lw=line_width, fill=fill)
             plt.xlabel("Fare price (\u00a3)")  # Adds the x-axis label -\u00a3 is the pound sign in unicode
             plt.title("Fare Prices to {}".format(input_station.name.replace(" ", "_")))  # Adds the title for the
             # plot, uses the replace function to replace spaces in the station name with underscores
