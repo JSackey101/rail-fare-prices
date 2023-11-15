@@ -32,4 +32,3 @@ def read_rail_network(filepath):
         rail_network = RailNetwork(list_of_stations)  # Creates a rail network from the list of station objects
     return rail_network
 
-

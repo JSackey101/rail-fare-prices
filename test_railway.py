@@ -1,6 +1,8 @@
 import pytest
 from railway import fare_price, Station, RailNetwork
 import numpy as np
+from utilities import read_rail_network
+from pathlib import Path
 
 
 # Used to store various parameters for Station object creation to carry out similar tests more efficiently
@@ -234,3 +236,47 @@ def test_closest_hub_error(stations):
     rail_network = RailNetwork(list_of_stations)
     with pytest.raises(ValueError):  # Checks whether this test raises a ValueError
         rail_network.closest_hub(edinburgh_park)
+
+
+@pytest.fixture()
+def csv_network():
+    """
+    Test function that sets up an example RailNetwork object that can be called by other tests using the
+    uk_stations.csv station data.
+    """
+    file_path = Path("uk_stations.csv")
+    rail_network = read_rail_network(file_path)
+    stations = rail_network.list_of_stations
+    return rail_network, stations
+
+
+@pytest.mark.parametrize("start, dest, index_one, index_two",
+                         [("BTN", "LRB", 322, 1354), ("BTN", "KGX", 322, 1350)])
+def test_journey_planner_one_leg(csv_network, start, dest, index_one, index_two):
+    rail_network, stations = csv_network
+    result = rail_network.journey_planner(start, dest)
+    expected = [stations[index_one], stations[index_two]]
+    assert result == expected
+
+
+def test_journey_planner_three_leg(csv_network):
+    rail_network, stations = csv_network
+    result = rail_network.journey_planner("EDP", "EDG")
+    expected = [stations[741], stations[1671], stations[1300], stations[739]]
+    assert result == expected
+
+
+@pytest.mark.parametrize("start, dest, index_one, index_two, index_three",
+                         [("DBY", "DPT", 640, 777, 641), ("DPT", "DBY", 641, 777, 640)])
+def test_journey_planner_two_leg(csv_network, start, dest, index_one, index_two, index_three):
+    rail_network, stations = csv_network
+    result = rail_network.journey_planner(start, dest)
+    expected = [stations[index_one], stations[index_two], stations[index_three]]
+    assert result == expected
+
+@pytest.mark.parametrize("start, dest",
+                         [("ZZZ", "LRB"), ("BTN", "ZZZ")])
+def test_journey_planner_error(csv_network, start, dest):
+    rail_network, stations = csv_network
+    with pytest.raises(ValueError):
+        rail_network.journey_planner(start, dest)

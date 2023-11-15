@@ -189,7 +189,6 @@ class RailNetwork:
                 elif not start_station.hub and dest_station.hub:
                     return [start_station, closest_hub_to_start, dest_station]
 
-
     def journey_fare(self, start, dest, summary):
         raise NotImplementedError
 
@@ -261,4 +260,5 @@ class RailNetwork:
 
         plt.show()
         return
+
 
