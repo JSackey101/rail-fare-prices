@@ -255,6 +255,10 @@ def csv_network():
                          [("BTN", "LRB", 322, 1354),
                           ("BTN", "KGX", 322, 1350)])
 def test_journey_planner_one_leg(csv_network, start, dest, index_one, index_two):
+    """
+    Function to test whether the journey_planner method of the RailNetwork class returns the correct list of stations
+    in the correct order for a 1 leg journey.
+    """
     rail_network, stations = csv_network
     result = rail_network.journey_planner(start, dest)
     expected = [stations[index_one], stations[index_two]]
@@ -262,6 +266,10 @@ def test_journey_planner_one_leg(csv_network, start, dest, index_one, index_two)
 
 
 def test_journey_planner_three_leg(csv_network):
+    """
+    Function to test whether the journey_planner method of the RailNetwork class returns the correct list of stations
+    in the correct order for a 3 leg journey.
+    """
     rail_network, stations = csv_network
     result = rail_network.journey_planner("EDP", "EDG")
     expected = [stations[741], stations[2025], stations[1300], stations[739]]
@@ -272,6 +280,10 @@ def test_journey_planner_three_leg(csv_network):
                          [("DBY", "DPT", 640, 777, 641),
                           ("DPT", "DBY", 641, 777, 640)])
 def test_journey_planner_two_leg(csv_network, start, dest, index_one, index_two, index_three):
+    """
+    Function to test whether the journey_planner method of the RailNetwork class returns the correct list of stations
+    in the correct order for a 1 leg journey.
+    """
     rail_network, stations = csv_network
     result = rail_network.journey_planner(start, dest)
     expected = [stations[index_one], stations[index_two], stations[index_three]]
@@ -282,6 +294,10 @@ def test_journey_planner_two_leg(csv_network, start, dest, index_one, index_two,
                          [("ZZZ", "LRB"),
                           ("BTN", "ZZZ")])
 def test_journey_planner_error(csv_network, start, dest):
+    """
+    Function to test whether the journey_planner method of the RailNetwork class correctly raises a ValueError when
+    either the start CRS code or dest CRS code provided are not found in the network.
+    """
     rail_network, stations = csv_network
     with pytest.raises(ValueError):
         rail_network.journey_planner(start, dest)
@@ -292,6 +308,10 @@ def test_journey_planner_error(csv_network, start, dest):
                           ("DBY", "DPT", 54.97848449384277),
                           ("EDP", "EDG", 51.97956517575288)])
 def test_journey_fare(csv_network, start, dest, expected):
+    """
+    Function to test whether the journey_fare method of the RailNetwork class returns the correct fare for journeys
+    of different legs.
+    """
     rail_network, stations = csv_network
     result = rail_network.journey_fare(start, dest)
     assert result == expected

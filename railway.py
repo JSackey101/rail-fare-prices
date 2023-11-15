@@ -20,6 +20,15 @@ class Station:
     def __init__(self, name: str, region: str, crs: str, lat: float, lon: float, hub: bool):
         """
         Constructor method that defines all the necessary attributes for station objects created from this class.
+
+        Sets up the attributes:
+        - name - The name of the station. -> String
+        - region - The region the station resides in. -> String
+        - crs - The CRS code of the station. -> String
+        - lat - The latitude of the station. -> Float
+        - lon - The longitude of the station. -> Float
+        - hub - Whether the station is a hub station or not. -> Boolean
+
         """
         self.name = name
         self.region = region
@@ -87,10 +96,14 @@ class RailNetwork:
     def __init__(self, list_of_stations):
         """
         Constructor method that defines all the necessary attributes for rail network objects created from this class.
+
+        Sets up the attributes:
+        - list_of_stations - A list of station objects taken as a parameter during object creation
+        - stations - A dictionary composing of CRS codes as keys and corresponding Station objects as values.
         """
         self.list_of_stations = list_of_stations
         # Goes through the stations in the list of stations given as a parameter, checks their CRS codes against the
-        # ones that have been recorded already, raises an error if the CRS code has been recorded alreay and records
+        # ones that have been recorded already, raises an error if the CRS code has been recorded already and records
         # the CRS code if not.
         crs = []
         for station in list_of_stations:
@@ -123,7 +136,7 @@ class RailNetwork:
         Method that returns a list of all the hub stations within the rail network object.
 
         If the optional region parameter is passed, this method would return a list of all the hub stations within
-        the rail network object that are also part of the given region instead.
+        the rail network object that are also part of the given region instead. By default, this parameter is "None".
         """
         # Checks whether the region parameter has been passed and whether the region given is not a region for any of
         # the stations within the stations dictionary. Returns an error if these conditions are fulfilled.
@@ -211,6 +224,14 @@ class RailNetwork:
                     return [start_station, closest_hub_to_start, dest_station]
 
     def journey_fare(self, start, dest, summary=False):
+        """
+        Method that takes 2 CRS codes as parameters, being a CRS code for the station the journey starts from and a
+        CRS code for the station the journey ends at and returns a calculated fare price for a journey between the
+        two stations.
+
+        Optionally takes summary as a parameter which prints a summary of the journey and its fare price if it is True.
+        This is by default False.
+        """
         journey_route = self.journey_planner(start, dest)
         fare = 0
         summary_line_one = "Journey from {0} ({1}) to {2} ({3})".format(journey_route[0].name, journey_route[0].crs,
@@ -246,6 +267,21 @@ class RailNetwork:
         return fare
 
     def plot_fares_to(self, crs_code, save=False, bins=10, colour="red", edge_colour="none", line_width=1):
+        """
+        Method that takes a station's CRS code as a parameter, generates a list of fare prices of journeys from all
+        other stations in the network (excluding the station of the given CRS code) to the station of the given CRS
+        code and produces a histogram plot from this data which is displayed to the user.
+
+        Optionally takes:
+        - A save parameter which will save the histogram plot produced to a .png file instead of
+        displaying it to the user. This is by default False.
+        - A bins parameter which will determine the number of bins the histogram has. This is by default 10.
+        - A colour parameter which will determine the colour of the histogram. This is by default red.
+        - A edge_colour parameter which determines the colour of edges of bars in the histogram.
+        This is by default "none" meaning the edges are not a different colour to the histogram.
+        - A line_width parameter which determines the width of the edge of the bars in the histogram.
+        This is by default 1.
+        """
         network = self.list_of_stations
         fares = []
         for station in network:
