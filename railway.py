@@ -84,6 +84,7 @@ class Station:
         lat2 = other_station.lat  # Latitude of the other_station object given as a parameter
         lon1 = self.lon  # Longitude of the station object
         lon2 = other_station.lon  # Longitude of the other_station object given as a parameter
+        # Uses numpy to calculate distance using the above variables and the Haversine formula
         distance = 2 * r * np.arcsin(np.sqrt(
             (np.power((np.sin(np.radians((lat2 - lat1) / 2))), 2)) + (
                     np.cos(np.radians(lat1)) * np.cos(np.radians(lat2)) * np.power(
@@ -154,12 +155,12 @@ class RailNetwork:
             for crs, station in self.stations.items():  # Goes through each key, value pair in the stations dictionary
                 if station.hub and station.region == region:  # Checks whether the current station object is both a
                     # hub station and is in the given region
-                    hub_stations.append(station)
+                    hub_stations.append(station)  # Adds the current station to the hub_stations list
         else:
             hub_stations = []
             for crs, station in self.stations.items():  # Goes through each key, value pair in the stations dictionary
                 if station.hub:  # Checks whether the current station object is a hub station
-                    hub_stations.append(station)
+                    hub_stations.append(station)  # Adds the current station to the hub_stations list
         return hub_stations
 
     def closest_hub(self, s):
@@ -174,9 +175,10 @@ class RailNetwork:
             # whether the current station is a hub station and whether the CRS code of the current station does not
             # match the CRS code of the station object taken as a parameter
             if station.region == s.region and station.hub and s.crs is not station.crs:
-                regional_stations.append(station)
+                regional_stations.append(station) # Adds the current station to the regional_stations list
                 distances.append(station.distance_to(s))  # Uses the distance_to method of the current station to
-                # calculate its distance to the station object taken as a parameter
+                # calculate its distance to the station object taken as a parameter and adds this value to
+                # the distances list
         if not regional_stations:  # Checks whether the regional_stations list is empty - this indicates that the
             # given station has no hub stations in its region
             raise ValueError("The given station has no hub stations in its region.")
@@ -204,6 +206,7 @@ class RailNetwork:
                     start_station = station  # Sets a new start variable to the station object
                 if dest == crs:  # Checks whether the current CRS code matches the one given in the start parameter
                     dest_station = station  # Sets a new destination variable to the station object
+
             # Returns a list containing the start and destination station indicating a 1 leg journey if either the
             # regions of both station variables are the same or both station variables are hub stations
             if start_station.region == dest_station.region or start_station.hub and dest_station.hub:
@@ -239,17 +242,27 @@ class RailNetwork:
         Optionally takes summary as a parameter which prints a summary of the journey and its fare price if it is True.
         This is by default False.
         """
-        journey_route = self.journey_planner(start, dest)
-        fare = 0
+        journey_route = self.journey_planner(start, dest)  # Puts the list of stations passed in the journey between
+        # the 2 given stations in the journey_route variable
+        fare = 0 # Sets up the fare variable which will store the fare price for the journey
+        # Creates the first line for the print that occurs if the summary parameter is True, numbers are replaced by
+        # the values by the format function in the order of inputs to the format function.
         summary_line_one = "Journey from {0} ({1}) to {2} ({3})".format(journey_route[0].name, journey_route[0].crs,
                                                                         journey_route[-1].name, journey_route[-1].crs)
+        # 3 checks of the length of the journey_route list which shows whether it is a 1,2 or 3 leg journey
         if len(journey_route) == 2:
+            # Creates the second line for the print that occurs if the summary parameter is True for a 1 leg journey.
+            # numbers are replaced by the values by the format function in the order of inputs to the format function.
             summary_line_two = summary_line_two = "Route: {0} -> {1}".format(journey_route[0].crs, journey_route[1].crs)
         elif len(journey_route) == 3:
+            # Creates the second line for the print that occurs if the summary parameter is True for a 2 leg journey.
+            # numbers are replaced by the values by the format function in the order of inputs to the format function.
             summary_line_two = summary_line_two = "Route: {0} -> {1} ({2}) -> {3}".format(journey_route[0].crs,
                                                                                           journey_route[1].crs,
                                                                                           journey_route[1].name,
                                                                                           journey_route[2].crs)
+            # Creates the second line for the print that occurs if the summary parameter is True for a 3 leg journey.
+            # numbers are replaced by the values by the format function in the order of inputs to the format function.
         elif len(journey_route) == 4:
             summary_line_two = summary_line_two = "Route: {0} -> {1} ({2}) -> {3} ({4}) -> {5}".format(
                 journey_route[0].crs,
@@ -257,19 +270,28 @@ class RailNetwork:
                 journey_route[1].name,
                 journey_route[2].crs, journey_route[2].name, journey_route[3].crs)
 
+        # Goes through each leg of the journey as fare price needs to be calculated for each leg individually first
         for index in range(len(journey_route) - 1):
-            start_station = journey_route[index]
-            if index == 0:
-                summary_line_two.format(start_station.crs)
-            dest_station = journey_route[index + 1]
-            if start_station.region != dest_station.region:
+            start_station = journey_route[index]  # Sets the starting station for the calculation
+            if index == 0: # At this index the station is guaranteed to be the start station
+                summary_line_two.format(start_station.crs)  # Formats the start station's CRS code into the summary
+                # text.
+            dest_station = journey_route[index + 1]  # Sets the destination station for the calculation
+            # This would be 1 after the starting station as the stations returned by journey_route are in order of
+            # travel
+            if start_station.region != dest_station.region:  # Checks whether the regions of both stations are different
                 diff_regions = 1
             else:
                 diff_regions = 0
-            distance = float(start_station.distance_to(dest_station))
-            regional_hubs_in_dest = int(len(self.hub_stations(dest_station.region)))
-            fare += fare_price(distance, diff_regions, regional_hubs_in_dest)
-        if summary:
+            distance = start_station.distance_to(dest_station)  # Calculates the distance from the starting
+            # station to the destination station for the fare price calculation using the distance_to method
+            regional_hubs_in_dest = len(self.hub_stations(dest_station.region))  # Gets a list of hub stations within
+            # the same region as the destination station using the hub_stations method and measures the length of
+            # this list
+            fare += fare_price(distance, diff_regions, regional_hubs_in_dest) # Calculates the fare price for this
+            # leg and adds it to the previous value of the fare price variable
+        if summary:  # Checks whether the summary parameter has been passed as True
+            # Prints the cost in an informative format - \u00a3 is the pound sign in unicode
             print(summary_line_one + "\n" + summary_line_two + "\n" + "Fare: \u00a3{}".format(round(fare, 2)) + "\n")
         return fare
 
@@ -289,30 +311,40 @@ class RailNetwork:
         - A line_width parameter which determines the width of the edge of the bars in the histogram.
         This is by default 1.
         """
-        network = self.list_of_stations
+        network = self.list_of_stations  # Gets the list of stations in the network
         fares = []
         for station in network:
-            if station.crs == crs_code:
-                input_station = station
-                continue
-            try:
-                journey_cost = self.journey_fare(station.crs, crs_code)
-                fares.append(journey_cost)
-            except ValueError:
-                continue
-        if save:
-            plt.figure()
+            if station.crs == crs_code:  # Checks whether the current station has the same CRS code as the CRS code
+                # given as a parameter
+                input_station = station  # If this is the case the current station is saved in the input_station
+                # variable for later
+                continue  # Skips the rest of the block and moves to the next iteration of the for loop
+            try:  # Attempts to run the code in this block and will not raise an error if it runs into one
+                journey_cost = self.journey_fare(station.crs, crs_code)  # Attempt to calculate the cost to go from
+                # the current station to the station that the CRS code given as a parameter represents
+                fares.append(journey_cost)  # Adds this cost value to the fares list
+            except ValueError:  # If a ValueError is encountered this code is run - ValueError would be raised if it
+                # is impossible to plan a journey between the input station and the current station
+                continue  # Moves to the next iteration
+        if save:  # Checks whether the save parameter has been passed as True
+            # Creates a histogram using the fares data and uses given or default parameters to control how the
+            # histogram is plotted
             plt.hist(fares, bins, color=colour, ec=edge_colour, lw=line_width)
-            plt.xlabel("Fare price (\u00a3)")
-            plt.title("Fare Prices to {}".format(input_station.name.replace(" ", "_")))
-            plt.savefig("Fare_prices_to_{}".format(input_station.name.replace(" ", "_")))
+            plt.xlabel("Fare price (\u00a3)")  # Adds the x-axis label -\u00a3 is the pound sign in unicode
+            plt.title("Fare Prices to {}".format(input_station.name.replace(" ", "_")))  # Adds the title for the
+            # plot, uses the replace function to replace spaces in the station name with underscores
+            plt.savefig("Fare_prices_to_{}".format(input_station.name.replace(" ", "_"))) # Saves the figure to a
+            # .png file, uses the replace function to replace spaces in the station name with underscores
             print("\nFigure has been saved.")
         else:
-            plt.figure()
+            plt.figure()  # Sets up the figure that the histogram will be plotted on
+            # Creates a histogram using the fares data and uses given or default parameters to control how the
+            # histogram is plotted
             plt.hist(fares, bins, color=colour, ec=edge_colour, lw=line_width)
-            plt.xlabel("Fare price (\u00a3)")
-            plt.title("Fare Prices to {}".format(input_station.name.replace(" ", "_")))
-            plt.show()
+            plt.xlabel("Fare price (\u00a3)")  # Adds the x-axis label -\u00a3 is the pound sign in unicdoe
+            plt.title("Fare Prices to {}".format(input_station.name.replace(" ", "_")))  # Adds the title for the
+            # plot, uses the replace function to replace spaces in the station name with underscores
+            plt.show()  # Displays the plot
 
     def plot_network(self, marker_size: int = 5) -> None:
         """

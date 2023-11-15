@@ -23,16 +23,19 @@ def read_rail_network(filepath):
         # and adds each station object to the list_of_stations list.
         list_of_stations = []
         for row in stations_data:
-            if row[header_info.index("hub")] == "1":
+            if row[header_info.index("hub")] == "1":  # Checks whether the station is a hub station indicated by this
+                # parameter being 1
                 hub_station = True
-            elif row[header_info.index("hub")] == "0":
+            elif row[header_info.index("hub")] == "0":  # Checks whether the station is not a hub station indicated
+                # by this parameter being 0
                 hub_station = False
+            # Creates a Station object using the columns in the current data row, ensuring that the columns are used
+            # in the correct order through indexing
             station = Station(row[header_info.index("name")], row[header_info.index("region")],
                               row[header_info.index("crs")], float(row[header_info.index("latitude")]),
                               float(row[header_info.index("longitude")]), hub_station)
-            list_of_stations.append(station)
+            list_of_stations.append(station) # Adds the station object to the list_of_stations list
         rail_network = RailNetwork(list_of_stations)  # Creates a rail network from the list of station objects
     return rail_network
-
 
 
