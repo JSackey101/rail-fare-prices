@@ -341,7 +341,7 @@ class RailNetwork:
             # Creates a histogram using the fares data and uses given or default parameters to control how the
             # histogram is plotted
             plt.hist(fares, bins, color=colour, ec=edge_colour, lw=line_width)
-            plt.xlabel("Fare price (\u00a3)")  # Adds the x-axis label -\u00a3 is the pound sign in unicdoe
+            plt.xlabel("Fare price (\u00a3)")  # Adds the x-axis label -\u00a3 is the pound sign in unicode
             plt.title("Fare Prices to {}".format(input_station.name.replace(" ", "_")))  # Adds the title for the
             # plot, uses the replace function to replace spaces in the station name with underscores
             plt.show()  # Displays the plot

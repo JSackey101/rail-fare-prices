@@ -3,6 +3,8 @@ from railway import fare_price, Station, RailNetwork
 import numpy as np
 from utilities import read_rail_network
 from pathlib import Path
+import matplotlib.pyplot as plt
+import warnings
 
 
 # Used to store various parameters for Station object creation to carry out similar tests more efficiently
@@ -286,7 +288,7 @@ def test_journey_planner_one_leg(csv_network, start, dest, index_one, index_two)
     Function to test whether the journey_planner method of the RailNetwork class returns the correct list of stations
     in the correct order for a 1 leg journey.
     """
-    rail_network, stations = csv_network   # Gets the rail_network object and list of stations I created in the
+    rail_network, stations = csv_network  # Gets the rail_network object and list of stations I created in the
     # csv_network() function
     result = rail_network.journey_planner(start, dest)  # Returns a list of stations passed through for a 1 leg
     # journey from the starting to the destination station
@@ -350,8 +352,39 @@ def test_journey_fare(csv_network, start, dest, expected):
     Function to test whether the journey_fare method of the RailNetwork class returns the correct fare for journeys
     of different legs.
     """
-    rail_network, stations = csv_network  # Returns a list of stations passed through for a 1 leg
-    # journey from the starting to the destination station
+    rail_network, stations = csv_network  # Gets the rail_network object and list of stations I created in the
+    # csv_network() function
     result = rail_network.journey_fare(start, dest)  # Calculates the fare for the journey
     assert result == expected
 
+
+def test_plot_fares_to_no_error(csv_network):
+    """
+    Function to test whether the plot_fares_to method of the RailNetwork class raises no ValueErrors in its operation
+    """
+    rail_network, stations = csv_network  # Gets the rail_network object and list of stations I created in the
+    # csv_network() function
+    plt.switch_backend("Agg")  # Switches the matplotlib backend to one that does not display figures
+    # This speeds up testing time and prevents figures from showing during testing
+    warnings.filterwarnings("ignore", "Matplotlib is currently using agg")  # Suppresses the UserWarning that tells
+    # us that Agg cannot show plots
+    try:  # Attempts to create plot fares from other stations to King's Cross station
+        rail_network.plot_fares_to("KGX")
+    except ValueError:  # If a ValueError is raised, the test fails
+        assert False, "The method raised a ValueError."
+
+
+def test_plot_fares_to_save(csv_network):
+    """
+    Function to test whether the plot_fares_to method of the RailNetwork class saves the histogram plot to a png file
+    with the correct name format when save is True
+    """
+    rail_network, stations = csv_network  # Gets the rail_network object and list of stations I created in the
+    # csv_network() function
+    rail_network.plot_fares_to("KGX", save=True)  # Creates a histogram plot using plot fares from other stations to
+    # King's Cross station and saves this plot
+    try:  # Attempts to read the image using matplotlib
+        plt.imread("Fare_prices_to_London_Kings_Cross.png")
+    except FileNotFoundError:  # If a FileNotFoundError is raised, the test fails. This would indicate that the plot
+        # was either not saved or not saved in the correct format
+        assert False, "The method raised a FileNotFoundError."
