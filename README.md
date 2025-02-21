@@ -4,6 +4,10 @@
 
 Loads Train Station data for the UK (obtained from ) 
 
+## Components 
+
+### 1. 
+
 ## Information about the data.
 
 Amalgamation of 2 publically available datasets:
