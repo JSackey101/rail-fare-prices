@@ -8,9 +8,9 @@ Loads Train Station data for the UK (obtained from )
 
 Amalgamation of 2 publically available datasets:
 
-1. Obtained from the [https://www.orr.gov.uk](Office of Rail and Road (ORR)) dataset of estimates of station usage between April 2020 and May 2021 with the raw data being found [https://dataportal.orr.gov.uk/media/2148/table-1410-estimates-of-station-usage-2020-21.ods](here) - providing station names, regions and CRS codes.
+1. Obtained from the [Office of Rail and Road (ORR)](https://www.orr.gov.uk) dataset of estimates of station usage between April 2020 and May 2021 with the raw data being found [here](https://dataportal.orr.gov.uk/media/2148/table-1410-estimates-of-station-usage-2020-21.ods) - providing station names, regions and CRS codes.
 
-2. [https://www.github.com/davwheat/uk-railway-stations/tree/main](This GitHub repository) - providing latitude and longitude coordinates.
+2. [This GitHub repository](https://www.github.com/davwheat/uk-railway-stations/tree/main) - providing latitude and longitude coordinates.
 
 
 
