@@ -2,11 +2,23 @@
 
 ## Description
 
-Loads Train Station data for the UK (obtained from ) 
+Contains the functionality to load UK train station data and visualise rail networks loaded in, alongside calculating details regarding journeys made within the rail networks (such as what stations would be involved and fare prices) and visualising them.
 
 ## Components 
 
-### 1. 
+### 1. railway.py
+
+Station class - code needed to produce Station objects
+RailNetwork class - code needed to product RailNetwork objects that contain a list of Station objects
+fare_price function - calculates the fare price in £-GBP between 2 stations
+
+### 2. utilities.py
+
+read_rail_network function - oads a dataset containing station data (e.g. in uk_stations.csv) and creates a RailNetwork object from the data.
+
+### 3. test_railway,py
+
+Contains tests for the functions and classes.
 
 ## Information about the data.
 
