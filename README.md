@@ -9,7 +9,7 @@ Contains the functionality to load UK train station data and visualise rail netw
 ### 1. railway.py
 
 Station class - code needed to produce Station objects
-RailNetwork class - code needed to product RailNetwork objects that contain a list of Station objects
+RailNetwork class - code needed to produce RailNetwork objects that contain a list of Station objects
 fare_price function - calculates the fare price in £-GBP between 2 stations
 
 ### 2. utilities.py
